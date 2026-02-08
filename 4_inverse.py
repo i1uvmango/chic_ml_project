@@ -19,17 +19,18 @@ class CaloriePredictor(nn.Module):
     def forward(self, x): return self.net(x)
 
 # 2. 모델 로드 및 가중치 추출
-model = CaloriePredictor(input_dim=10)
-model.load_state_dict(torch.load('calorie_model.pth'))
+# 2. 모델 로드 및 가중치 추출
+model = CaloriePredictor(input_dim=7)
+model.load_state_dict(torch.load('model/calorie_model_7dim.pth'))
 model.eval()
 
-# 첫 번째 레이어(10 -> 128)의 가중치 평균값 계산
+# 첫 번째 레이어(7 -> 128)의 가중치 평균값 계산
 # 각 입력 변수가 128개의 노드에 미치는 영향력의 평균을 구합니다.
 first_layer_weights = model.net[0].weight.data.numpy()
 feature_importance = np.mean(np.abs(first_layer_weights), axis=0)
 
 # 3. 결과 출력
-features = ['Sex', 'Age', 'Height', 'Weight', 'Duration', 'Heart_Rate', 'Body_Temp', 'HR_max', 'Zone', 'BMR']
+features = ['Sex', 'Age', 'Height', 'Weight', 'Duration', 'Zone', 'BMR']
 importance_df = pd.DataFrame({'Feature': features, 'Importance': feature_importance})
 importance_df = importance_df.sort_values(by='Importance', ascending=False)
 

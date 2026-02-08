@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 import os
 
 # 1. 데이터 로드 (7차원 전용 데이터)
-file_path = 'train_data_7dim.csv'
+file_path = 'model/train_data_scaled_7dim.csv'
 if not os.path.exists(file_path):
     print(f"에러: {file_path} 파일이 없습니다. 전처리 코드를 먼저 실행하세요.")
     exit()
@@ -83,6 +83,6 @@ for epoch in range(epochs):
     print(f"Epoch [{epoch+1}/{epochs}] - Train Loss: {train_loss/len(train_loader):.4f}, Val Loss: {val_loss/len(val_loader):.4f}")
 
 # 4. 모델 저장 (7차원 전용 파일명)
-torch.save(model.state_dict(), 'calorie_model_7dim.pth')
+torch.save(model.state_dict(), 'model/calorie_model_7dim.pth')
 print("-" * 30)
-print("✅ 학습 완료! 모델 저장: calorie_model_7dim.pth")
+print("✅ 학습 완료! 모델 저장: model/calorie_model_7dim.pth")

@@ -65,11 +65,11 @@ train_df[scale_cols] = scaler.fit_transform(train_df[scale_cols]).astype('float3
 train_df['Calories'] = train_df['Calories'].astype('float32')
 
 # 5. 결과 저장
-processed_path = 'train_data_scaled_7dim.csv'
+processed_path = 'model/train_data_scaled_7dim.csv'
 train_df.to_csv(processed_path, index=False)
 
 # [중요] 스케일러 저장 (나중에 7개 피처 순서대로 사용됨)
-joblib.dump(scaler, 'scaler.pkl')
+joblib.dump(scaler, 'model/scaler.pkl')
 
 print("-" * 40)
 print("✅ [7-Dimension] 전처리 완료!")

@@ -5,6 +5,7 @@ import numpy as np
 import joblib
 
 # 1. 모델 구조 정의 (학습 때와 동일)
+# 1. 모델 구조 정의 (학습 때와 동일)
 class CaloriePredictor(nn.Module):
     def __init__(self, input_dim):
         super(CaloriePredictor, self).__init__()
@@ -21,9 +22,9 @@ class CaloriePredictor(nn.Module):
 
 # 2. 필수 파일 로드
 try:
-    scaler = joblib.load('scaler.pkl')
-    model_state = torch.load('calorie_model.pth')
-    model = CaloriePredictor(input_dim=10)
+    scaler = joblib.load('model/scaler.pkl')
+    model_state = torch.load('model/calorie_model_7dim.pth')
+    model = CaloriePredictor(input_dim=7) # 7차원으로 변경
     model.load_state_dict(model_state)
     model.eval()
     print("✅ 모델 및 스케일러 로드 완료!")
@@ -73,23 +74,17 @@ bigmac_count = int(get_valid_input("7. 하루 빅맥 섭취 개수: ", float, la
 is_male = 1 if sex == 'M' else 0
 bmr = (10 * weight) + (6.25 * height) - (5 * age) + (5 if is_male else -161)
 
+# 심박수는 Zone 계산용으로만 사용하거나 로직 유지 (모델 입력에는 제외)
 hr_max = 220 - age
-zone_mapping = {
-    1: {'hr': hr_max * 0.55, 'temp': 36.5},
-    2: {'hr': hr_max * 0.65, 'temp': 37.2},
-    3: {'hr': hr_max * 0.75, 'temp': 38.0},
-    4: {'hr': hr_max * 0.85, 'temp': 39.0},
-    5: {'hr': hr_max * 0.95, 'temp': 40.0}
-}
-mapped_hr = zone_mapping[zone]['hr']
-mapped_temp = zone_mapping[zone]['temp']
 
-# 5. AI 모델 예측
+# 5. AI 모델 예측 (7차원 입력 구성)
+# 학습 데이터 순서: Sex, Age, Height, Weight, Duration, Zone, BMR
 input_data = pd.DataFrame([[
-    is_male, age, height, weight, 60.0, mapped_hr, mapped_temp, hr_max, zone, bmr
-]], columns=['Sex', 'Age', 'Height', 'Weight', 'Duration', 'Heart_Rate', 'Body_Temp', 'HR_max', 'Zone', 'BMR'])
+    is_male, age, height, weight, 60.0, zone, bmr
+]], columns=['Sex', 'Age', 'Height', 'Weight', 'Duration', 'Zone', 'BMR'])
 
-scale_cols = ['Age', 'Height', 'Weight', 'Duration', 'Heart_Rate', 'Body_Temp', 'HR_max', 'Zone', 'BMR']
+# 스케일링 대상: Sex와 Target을 제외한 나머지
+scale_cols = ['Age', 'Height', 'Weight', 'Duration', 'Zone', 'BMR']
 input_scaled = input_data.copy()
 input_scaled[scale_cols] = scaler.transform(input_data[scale_cols])
 

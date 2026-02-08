@@ -1,0 +1,22 @@
+
+# Virtual Environments
+venv/
+env/
+.env
+
+# Python specific
+__pycache__/
+*.py[cod]
+
+# Data files (Large files)
+*.csv
+*.xlsx
+
+# Model files (Large files)
+*.pth
+*.pkl
+*.h5
+
+# OS specific
+.DS_Store
+Thumbs.db
